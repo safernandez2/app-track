@@ -1,20 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+import React, { useEffect, useState } from 'react';
+import SplashScreen from './screens/SplashScreen';
+import AppNavigator from './AppNavigator';
+import initializeDatabase from './database';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const App = () => {
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      await initializeDatabase(); // Inicializa la base de datos u otras tareas de inicialización
+
+      // Simula un tiempo de carga (puedes ajustar esto según tus necesidades)
+      setTimeout(() => {
+        setAppReady(true);
+      }, 4000);
+    };
+
+    initializeApp();
+  }, []);
+
+  return appReady ? <AppNavigator /> : <SplashScreen />;
+};
+
+export default App;
