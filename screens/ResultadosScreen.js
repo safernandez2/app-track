@@ -1,6 +1,5 @@
-// ResultadosScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import 'moment/locale/es';
@@ -17,12 +16,7 @@ const ResultadosScreen = () => {
 
         const participantesOrdenados = participantes
           .filter((participante) => participante.selectedDepartureTime !== null && participante.selectedArrivalTime !== null)
-          .sort((a, b) => {
-            const tiempoA = a.selectedArrivalTime;
-            const tiempoB = b.selectedArrivalTime;
-
-            return tiempoA - tiempoB;
-          });
+          .sort((a, b) => a.selectedArrivalTime - b.selectedArrivalTime);
 
         setResultados(participantesOrdenados);
       } catch (error) {
@@ -34,74 +28,59 @@ const ResultadosScreen = () => {
   }, []);
 
   const renderParticipanteItem = ({ item, index }) => {
-    // Calcula el intervalo de tiempo entre la salida y la llegada en minutos
     const arrivalTimeMoment = moment(item.selectedArrivalTime, 'Hmm');
     const departureTimeMoment = moment(item.selectedDepartureTime, 'Hmm');
     const intervaloMinutos = arrivalTimeMoment.diff(departureTimeMoment, 'minutes');
 
-    console.log('Arrival Time Moment:', arrivalTimeMoment.format('HH:mm'));
-    console.log('Departure Time Moment:', departureTimeMoment.format('HH:mm'));
-    console.log('Intervalo en minutos:', intervaloMinutos);
-  
     return (
-      <View style={{ padding: 10 }}>
-        <Text>{`${index + 1}.${item.nombre}`}</Text>
-        <Text>{`Intervalo de Tiempo: ${formatIntervaloTiempo(intervaloMinutos)}`}</Text>
+      <View style={styles.participanteContainer}>
+        <Text style={styles.participanteIndex}>{`${index + 1}.`}</Text>
+        <View style={styles.participanteDetails}>
+          <Text style={styles.participanteName}>{item.nombre}</Text>
+          <Text>{`Intervalo de Tiempo: ${formatIntervaloTiempo(intervaloMinutos)}`}</Text>
+        </View>
       </View>
     );
   };
-  
-
 
   const formatIntervaloTiempo = (minutos) => {
     const horas = Math.floor(minutos / 60);
     const minutosRestantes = minutos % 60;
-  
+
     let resultado = '';
     if (horas > 0) {
       resultado += `${horas} ${horas === 1 ? 'hora' : 'horas'}`;
     }
-  
+
     if (minutosRestantes > 0) {
       if (resultado !== '') {
         resultado += ' ';
       }
       resultado += `${minutosRestantes} ${minutosRestantes === 1 ? 'minuto' : 'minutos'}`;
     }
-  
+
     return resultado;
-  };
-  
- 
-
-  const formatTiempo = (tiempo) => {
-    if (tiempo === null || tiempo === undefined) {
-      return '';
-    }
-
-    const tiempoMoment = moment(tiempo, 'Hmm');
-    return tiempoMoment.format('HH:mm');
   };
 
   const renderGenreButtons = () => (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }}>
+    <View style={styles.genreContainer}>
       <TouchableOpacity
-        style={{ padding: 10, backgroundColor: selectedGenre === 'Masculino' ? 'rgb(57 95 133)' : 'transparent' }}
+        style={[styles.genreButton, selectedGenre === 'Masculino' && styles.genreButtonSelected]}
         onPress={() => setSelectedGenre('Masculino')}
       >
-        <Text style={{ color: selectedGenre === 'Masculino' ? 'white' : 'black' }}>Masculino</Text>
+        <Text style={[styles.genreButtonText, selectedGenre === 'Masculino' && { color: '#fff' }]}>Masculino</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={{ padding: 10, backgroundColor: selectedGenre === 'Femenino' ? 'rgb(57 95 133)' : 'transparent' }}
+        style={[styles.genreButton, selectedGenre === 'Femenino' && styles.genreButtonSelected]}
         onPress={() => setSelectedGenre('Femenino')}
       >
-        <Text style={{ color: selectedGenre === 'Femenino' ? 'white' : 'black' }}>Femenino</Text>
+        <Text style={[styles.genreButtonText, selectedGenre === 'Femenino' && { color: '#fff' }]}>Femenino</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={{ padding: 10, backgroundColor: selectedGenre === 'Otro' ? 'rgb(57 95 133)' : 'transparent'}}
+        style={[styles.genreButton, selectedGenre === 'Otro' && styles.genreButtonSelected]}
         onPress={() => setSelectedGenre('Otro')}
       >
-        <Text style={{ color: selectedGenre === 'Otro' ? 'white' : 'black' }}>Otro</Text>
+        <Text style={[styles.genreButtonText, selectedGenre === 'Otro' && { color: '#fff' }]}>Otro</Text>
       </TouchableOpacity>
     </View>
   );
@@ -111,21 +90,81 @@ const ResultadosScreen = () => {
     ? resultados.filter((participante) => participante.sexo === selectedGenre)
     : resultados;
 
-    return (
-      <View style={{ flex: 1, justifyContent: 'flex-start', padding: 16 }}>
-        <Text style={{ fontSize: 18, marginBottom: 10 }}>Resultados de Participantes</Text>
-        {renderGenreButtons()}
-        {filteredResultados.length > 0 ? (
-          <FlatList
-            data={filteredResultados}
-            renderItem={renderParticipanteItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        ) : (
-          <Text>Ningún participante ha llegado todavía.</Text>
-        )}
-      </View>
-    );
-  };
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Resultados de Participantes</Text>
+      {renderGenreButtons()}
+      {filteredResultados.length > 0 ? (
+        <FlatList
+          data={filteredResultados}
+          renderItem={renderParticipanteItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      ) : (
+        <Text style={styles.noResultText}>Ningún participante ha llegado todavía.</Text>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    padding: 16,
+    marginTop: 50,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  genreContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+    marginHorizontal: -10,
+  },
+  genreButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: '#395F85',
+    borderRadius: 5,
+    marginHorizontal: 10,
+    color: '#395F85', // Color de texto por defecto
+  },
+  genreButtonSelected: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#395F85',
+    borderRadius: 5,
+    marginHorizontal: 10,
+    color: '#fff', // Color de texto cuando está seleccionado
+  },
+  genreButtonText: {
+    fontWeight: 'bold',
+  },
+  participanteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  participanteIndex: {
+    marginRight: 10,
+    fontSize: 16,
+  },
+  participanteDetails: {
+    flex: 1,
+  },
+  participanteName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  noResultText: {
+    marginTop: 20,
+    textAlign: 'center',
+  },
+});
 
 export default ResultadosScreen;

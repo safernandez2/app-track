@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import 'moment/locale/es';
@@ -78,25 +78,28 @@ const ConsultasScreen = () => {
   const renderParticipanteDetails = () => {
     if (filteredParticipante) {
       return (
-        <View style={{ padding: 10 }}>
-          <Text>{`Nombre: ${filteredParticipante.nombre}`}</Text>
-          <Text>{`Cedula: ${filteredParticipante.cedula}`}</Text>
-          <Text>{`Tiempo: ${formatIntervaloTiempo(filteredParticipante.selectedArrivalTime, filteredParticipante.selectedDepartureTime)}`}</Text>
+        <View style={styles.participanteDetails}>
+          <Text style={styles.detailTitle}>Nombre:</Text>
+          <Text>{filteredParticipante.nombre}</Text>
+          <Text style={styles.detailTitle}>Cédula:</Text>
+          <Text>{filteredParticipante.cedula}</Text>
+          <Text style={styles.detailTitle}>Tiempo:</Text>
+          <Text>{formatIntervaloTiempo(filteredParticipante.selectedArrivalTime, filteredParticipante.selectedDepartureTime)}</Text>
         </View>
       );
     } else if (error) {
-      return <Text>{error}</Text>;
+      return <Text style={styles.errorText}>{error}</Text>;
     } else {
       return null;
     }
   };
 
   return (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 18, marginBottom: 10 }}>Consulta de Participantes</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Consulta de Participantes</Text>
       <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10, padding: 5 }}
-        placeholder="Buscar por cédula"
+        style={styles.input}
+        placeholder="Ingrese la cédula"
         onChangeText={(text) => {
           if (/^\d+$/.test(text) || text === '') {
             setSearchText(text);
@@ -116,5 +119,37 @@ const ConsultasScreen = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    paddingBottom: 100, // Ajuste para que el contenido no esté tan abajo
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 5,
+  },
+  participanteDetails: {
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+  },
+  detailTitle: {
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+  },
+});
 
 export default ConsultasScreen;

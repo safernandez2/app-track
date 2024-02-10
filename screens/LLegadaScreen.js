@@ -13,10 +13,10 @@ const LlegadaScreen = () => {
   const [participantes, setParticipantes] = useState([]);
   const [selectedParticipante, setSelectedParticipante] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedArrivalHour, setSelectedArrivalHour] = useState(0);
-  const [selectedArrivalMinute, setSelectedArrivalMinute] = useState(0);
-  const [selectedDepartureHour, setSelectedDepartureHour] = useState(0);
-  const [selectedDepartureMinute, setSelectedDepartureMinute] = useState(0);
+  const [selectedArrivalHour, setSelectedArrivalHour] = useState(0); // Cambiado a número
+  const [selectedArrivalMinute, setSelectedArrivalMinute] = useState(0); // Cambiado a número
+  const [selectedDepartureHour, setSelectedDepartureHour] = useState(0); // Cambiado a número
+  const [selectedDepartureMinute, setSelectedDepartureMinute] = useState(0); // Cambiado a número
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [participanteToDelete, setParticipanteToDelete] = useState(null);
 
@@ -30,10 +30,10 @@ const LlegadaScreen = () => {
         const participantesConId = participantes.map((p) => ({
           ...p,
           id: p.id || generateUniqueId(),
-          selectedArrivalHour: p.selectedArrivalTime ? Math.floor(p.selectedArrivalTime / 100) : 0,
-          selectedArrivalMinute: p.selectedArrivalTime ? p.selectedArrivalTime % 100 : 0,
-          selectedDepartureHour: p.selectedDepartureTime ? Math.floor(p.selectedDepartureTime / 100) : 0,
-          selectedDepartureMinute: p.selectedDepartureTime ? p.selectedDepartureTime % 100 : 0,
+          selectedArrivalHour: p.selectedArrivalTime ? Math.floor(p.selectedArrivalTime / 100).toString() : '0', // Cambiado a string
+          selectedArrivalMinute: p.selectedArrivalTime ? (p.selectedArrivalTime % 100).toString() : '0', // Cambiado a string
+          selectedDepartureHour: p.selectedDepartureTime ? Math.floor(p.selectedDepartureTime / 100).toString() : '0', // Cambiado a string
+          selectedDepartureMinute: p.selectedDepartureTime ? (p.selectedDepartureTime % 100).toString() : '0', // Cambiado a string
         }));
 
         setParticipantes(participantesConId);
@@ -50,13 +50,11 @@ const LlegadaScreen = () => {
     setSelectedParticipante(participante);
     setModalVisible(true);
   };
-  
 
   const handleGuardarTiempo = async () => {
     if (selectedParticipante) {
       const arrivalTimeNumerical = parseInt(`${selectedArrivalHour.toString().padStart(2, '0')}${selectedArrivalMinute.toString().padStart(2, '0')}`, 10);
       const departureTimeNumerical = parseInt(`${selectedDepartureHour.toString().padStart(2, '0')}${selectedDepartureMinute.toString().padStart(2, '0')}`, 10);
-  
       const participantesActualizados = participantes.map((p) => ({
         ...p,
         selectedArrivalTime: p.id === selectedParticipante.id ? arrivalTimeNumerical : p.selectedArrivalTime,
@@ -69,13 +67,12 @@ const LlegadaScreen = () => {
   
       setModalVisible(false);
       setSelectedParticipante(null);
-      setSelectedArrivalHour(0);
-      setSelectedArrivalMinute(0);
-      setSelectedDepartureHour(0);
-      setSelectedDepartureMinute(0);
+      setSelectedArrivalHour('0'); // Cambiado a string
+      setSelectedArrivalMinute('0'); // Cambiado a string
+      setSelectedDepartureHour('0'); // Cambiado a string
+      setSelectedDepartureMinute('0'); // Cambiado a string
     }
   };
-
 
   const borrarParticipante = async (participanteId) => {
     const participante = participantes.find((p) => p.id === participanteId);
@@ -145,8 +142,8 @@ const LlegadaScreen = () => {
             <Text style={styles.modalTitle}>Confirmar eliminación</Text>
             <Text>{`¿Seguro que quieres eliminar a ${participanteToDelete?.nombre}?`}</Text>
             <View style={styles.confirmationButtonsContainer}>
-              <Button title="Cancelar" onPress={() => setDeleteConfirmationVisible(false)} />
-              <Button title="Sí, eliminar" onPress={confirmarBorrarParticipante} color="red" />
+              <Button title="Cancelar" onPress={() => setDeleteConfirmationVisible(false)} color="rgb(57 95 133)"/>
+              <Button title="Sí, eliminar" onPress={confirmarBorrarParticipante} color="#be3535" />
             </View>
           </View>
         </View>
@@ -174,7 +171,7 @@ const LlegadaScreen = () => {
                 onValueChange={(itemValue) => setSelectedDepartureHour(itemValue)}
               >
                 {Array.from({ length: 24 }, (_, i) => (
-                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i} />
+                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i.toString()} /> // Convertido a string
                 ))}
               </Picker>
               <Picker
@@ -183,7 +180,7 @@ const LlegadaScreen = () => {
                 onValueChange={(itemValue) => setSelectedDepartureMinute(itemValue)}
               >
                 {Array.from({ length: 60 }, (_, i) => (
-                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i} />
+                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i.toString()} /> // Convertido a string
                 ))}
               </Picker>
             </View>
@@ -195,7 +192,7 @@ const LlegadaScreen = () => {
                 onValueChange={(itemValue) => setSelectedArrivalHour(itemValue)}
               >
                 {Array.from({ length: 24 }, (_, i) => (
-                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i} />
+                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i.toString()} /> // Convertido a string
                 ))}
               </Picker>
               <Picker
@@ -204,7 +201,7 @@ const LlegadaScreen = () => {
                 onValueChange={(itemValue) => setSelectedArrivalMinute(itemValue)}
               >
                 {Array.from({ length: 60 }, (_, i) => (
-                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i} />
+                  <Picker.Item key={i} label={i < 10 ? `0${i}` : i.toString()} value={i.toString()} /> // Convertido a string
                 ))}
               </Picker>
             </View>
@@ -220,12 +217,12 @@ const LlegadaScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    marginTop: 100,
-    marginRight: 50,  // Modificado para darle más espacio
-    marginLeft: 10,   // Modificado para darle más espacio
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    padding: 20,
+    marginTop: 50, 
+    borderRadius: 10,
   },
   title: {
     fontSize: 24,
@@ -234,17 +231,16 @@ const styles = StyleSheet.create({
     color: '#395F85',
   },
   participanteItemContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10, // Ajuste para separación entre elementos
-    backgroundColor: 'lightgray',
+    flexDirection: 'column', // Cambiado a 'column' para mostrar los datos verticalmente
+    marginBottom: 20,
+    backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 40, // Ajuste de padding
-    
+    padding: 20,
+    width: '100%', // Ajuste del ancho para ocupar todo el espacio disponible
   },
   participanteItem: {
     flex: 1,
+    marginBottom: 10, // Añadido margen inferior para separar los detalles del participante
   },
   participanteDetail: {
     fontSize: 16,
@@ -255,13 +251,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9534F',
     padding: 10,
     borderRadius: 5,
-    marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  deleteButtonText: {
-    color: 'white',
-    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
@@ -270,7 +261,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
     width: '90%',
